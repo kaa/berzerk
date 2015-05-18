@@ -1,0 +1,52 @@
+<html>
+   <head>
+      <title>Box2dWeb example</title>
+   </head>
+   <body>
+      <canvas id="canvas" width="600" height="600"></canvas>
+   </body>
+   <script type="text/javascript" src="lib/Box2dWeb-2.1.a.3.min.js"></script>
+   <script type="text/javascript" src="lib/patch.js"></script>
+   <script type="text/javascript" src="lib/three.js"></script>
+   <script type="text/javascript" src="game.js"></script>
+   <script type="text/javascript" src="keyboard.js"></script>
+   <script type="text/javascript" src="box.js"></script>
+   <script type="text/javascript">
+      var game, keyboard,
+          lastFrame = new Date().getTime();
+
+    var canvas = document.getElementById("canvas");
+       
+    window.addEventListener("load", function () {
+        keyboard = new Keyboard();
+        game = new Game(document.getElementById("canvas"), 8, new b2Vec2(0,0));
+        game.debug();
+
+        var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+        var cube = new THREE.Mesh( geometry, material );
+        scene.add( cube );
+
+        new Box(game, { mesh: cube });
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera( 75, canvas.innerWidth / canvas.innerHeight, 0.1, 1000 );
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize( canvas.innerWidth, canvas.innerHeight );
+        game.scene = scene;
+        game.camera = camera;
+        game.renderer = renderer;
+
+
+        // Main loop
+        requestAnimationFrame(function gameLoop() {
+          var tm = new Date().getTime();
+          var dt = (tm - lastFrame) / 1000;
+          if(dt > 1/15) { dt = 1/15; }
+          game.step(dt);
+          lastFrame = tm;
+          requestAnimationFrame(gameLoop);
+        });
+      });
+   </script>
+</html>
