@@ -1,0 +1,92 @@
+<html>
+   <head>
+      <title>Box2dWeb example</title>
+   </head>
+   <body>
+      <canvas id="canvas" width="600" height="600"></canvas>
+   </body>
+  <script type="text/javascript" src="lib/box2d.js"></script>  
+<!--  <script type="text/javascript" src="lib/patch.js"></script>-->
+  <script type="text/javascript" src="lib/stats.js"></script>
+  <script type="text/javascript" src="lib/three.js"></script>
+  <script type="text/javascript" src="game.js"></script>
+  <script type="text/javascript" src="keyboard.js"></script>
+  <script type="text/javascript" src="box.js"></script>
+  <script type="text/javascript" src="track.js"></script>
+  <script type="text/javascript">
+      function createLatch(n,callback) {
+        return function() {
+          if(--n > 0) return;
+          callback();
+        }
+      }
+
+      var stats = new Stats();
+      stats.setMode( 1 );
+      document.body.appendChild( stats.domElement );
+
+      var keyboard = new Keyboard();
+      window.meshes = {};
+      window.addEventListener("load", function(){
+        var latch = createLatch(2, init);
+        var loader = new THREE.JSONLoader();
+        loader.load('car.json', function(geometry, materials) {
+          meshes["car"] = new THREE.Mesh(
+            geometry,
+            new THREE.MeshFaceMaterial(materials)
+          );
+          latch();
+        });
+        loader.load('track.json', function(geometry, materials) {
+          meshes["track"] = new THREE.Mesh(
+            geometry,
+            new THREE.MeshFaceMaterial(materials)
+          );
+          latch();
+        });
+      });
+
+      function init() {
+        var game = new Game(document.getElementById("canvas"), new Box2D.b2Vec2(0,0));
+        game.scene.add(new THREE.AmbientLight( 0x404040 ));
+        var sun = new THREE.DirectionalLight(0xffcccc, 1, 200);
+        sun.position.set(0,0,50);
+        sun.rotation.set(0,3.14,0);
+        game.scene.add(sun);
+        new Box(game, { x: 2, y: 1, w: 10, h: 0.5 });
+        new Box(game, { x: -2, y: 1 });
+        new Box(game, { x: -2, y: -2 });
+
+        new Track(game);
+
+        var player = new Box(game);
+        game.cameraTrack = player;
+        player.live = function() {
+          var impulse = new Box2D.b2Vec2(0, 0);
+          if (keyboard[Keyboard.UP])
+            impulse.op_add(new Box2D.b2Vec2(0, -1));
+          if (keyboard[Keyboard.RIGHT])
+            impulse.op_add(new Box2D.b2Vec2(1, 0));
+          if (keyboard[Keyboard.DOWN])
+            impulse.op_add(new Box2D.b2Vec2(0, 1));
+          if (keyboard[Keyboard.LEFT])
+            impulse.op_add(new Box2D.b2Vec2(-1, 0));
+          this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter());
+        }
+
+        // Main loop
+        var lastFrame = new Date().getTime();
+        requestAnimationFrame(function gameLoop() {
+          requestAnimationFrame(gameLoop);
+          stats.begin();
+          var tm = new Date().getTime();
+          var dt = (tm - lastFrame) / 1000;
+          if(dt > 1/15) { dt = 1/15; }
+          game.step(dt,tm);
+          lastFrame = tm;
+          game.renderer.render(game.scene,game.camera);
+          stats.end();
+        });
+      }
+   </script>
+</html>

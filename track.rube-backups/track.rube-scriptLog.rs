@@ -1,2 +1,2 @@
-//Restarted script log at Sun May 17 20:21:00 2015
-getBody(1).setType(0);
+//Started script log at Mon Jun  1 21:27:19 2015
+

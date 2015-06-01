@@ -16,7 +16,7 @@ Game.prototype.step = function (dt) {
         if (actor && actor.live) actor.live(this.context);
     }
 
-    this.world.Step(Math.min(dt,1/15),4,3)
+    this.world.Step(Math.min(dt,1/15),8,3)
     this.world.ClearForces();
     if (this.debugDraw) {
         this.context.clearRect(0, 0, this.element.width, this.element.height);
@@ -24,7 +24,7 @@ Game.prototype.step = function (dt) {
         this.context.translate(this.element.width/2, this.element.height/2);
         if(this.camera) {
           var cameraPosition = this.camera.body.GetPosition();
-          this.context.translate(-cameraPosition.x, -cameraPosition.y);
+          this.context.translate(-cameraPosition.x*this.scale, -cameraPosition.y*this.scale);
         }
         this.world.DrawDebugData();
           this.context.restore();

@@ -1,0 +1,58 @@
+<html>
+   <head>
+      <title>Box2dWeb example</title>
+      <style type="text/css">
+      canvas { -webkit-transform: translateZ(0); }
+      </style>
+   </head>
+   <body>
+      <canvas id="canvas" width="1000" height="1000" style="width: 90vh; height: 90vh"></canvas>
+   </body>
+   <script type="text/javascript" src="lib/Box2dWeb-2.1.a.3.js"></script>
+   <script type="text/javascript" src="lib/patch.js"></script>
+   <script type="text/javascript" src="game.js"></script>
+   <script type="text/javascript" src="keyboard.js"></script>
+   <script type="text/javascript" src="car.js"></script>
+   <script type="text/javascript" src="tire.js"></script>
+   <script type="text/javascript" src="track.js"></script>
+   <script type="text/javascript" src="drivers.js"></script>
+   <script type="text/javascript">
+
+      window.keyboard = new Keyboard();
+      function init() {
+          var game = new Game(document.getElementById("canvas"), 3  , new b2Vec2(0,0));
+          //game.debug();
+
+          var track = new Track(game);
+          new Car(game, { 
+            x: -130, 
+            y: 120, 
+            driver: new KeyboardDriver() 
+          });
+
+          new Car(game, { 
+            x: -130, 
+            y: 130, 
+            driver: new WaypointDriver({
+              waypoints: Track.waypoints
+            })
+          });
+          /*new Car(game, { 
+            x: -145, 
+            y: 125, 
+            driver: new WaypointDriver({
+              waypoints: Track.waypoints
+            })
+          });*/
+          requestAnimationFrame(function gameLoop() {
+             var tm = new Date().getTime();
+             game.step(1/60);
+             lastFrame = tm;
+             requestAnimationFrame(gameLoop);
+          });
+      }
+      window.addEventListener("load",init);
+   </script>
+   
+   
+</html>

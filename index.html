@@ -1,0 +1,48 @@
+<html>
+   <head>
+      <title>Box2dWeb example</title>
+   </head>
+   <body>
+      <canvas id="canvas" width="1200" height="700"></canvas>
+   </body>
+   <script type="text/javascript" src="lib/Box2dWeb-2.1.a.3.js"></script>
+   <script type="text/javascript" src="lib/patch.js"></script>
+   <script type="text/javascript" src="game.js"></script>
+   <script type="text/javascript" src="keyboard.js"></script>
+   <script type="text/javascript" src="body.js"></script>
+   <script type="text/javascript" src="car.js"></script>
+   <script type="text/javascript" src="tire.js"></script>
+   <script type="text/javascript" src="track.js"></script>
+   <script type="text/javascript">
+
+      var game,
+          car,
+          lastFrame = new Date().getTime();
+       
+      window.keyboard = new Keyboard();
+
+      function gameLoop() {
+         var tm = new Date().getTime();
+         var dt = (tm - lastFrame) / 1000;
+         if(dt > 1/15) { dt = 1/15; }
+         game.step(dt);
+         lastFrame = tm;
+         requestAnimationFrame(gameLoop);
+      };
+       
+      function init() {
+          game = new Game(document.getElementById("canvas"), 8, new b2Vec2(0,0));
+//            game.debug();
+
+          game.camera = car = new Car(game, { x: -60, y: -10 });
+          new Car(game, { x: -60, y: -10 });
+          new Track(game);
+
+
+          requestAnimationFrame(gameLoop);
+      }
+      window.addEventListener("load",init);
+   </script>
+   
+   
+</html>
